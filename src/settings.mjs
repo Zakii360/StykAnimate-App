@@ -111,7 +111,14 @@ export function normalizeTutorialsDone(value) {
 }
 export function normalizeEditorSettings(value = {}) {
   const result = { ...DEFAULT_EDITOR_SETTINGS };
-  result.locale = normalizeLocale(value?.locale);
+  // On a fresh browser install, follow the browser's preferred language when a
+  // matching translation pack exists. An explicit saved locale always wins.
+  const hasSavedLocale = value && Object.prototype.hasOwnProperty.call(value, 'locale');
+  const browserLocales = typeof navigator !== 'undefined'
+    ? (Array.isArray(navigator.languages) && navigator.languages.length ? navigator.languages : [navigator.language])
+    : [];
+  const browserLocale = browserLocales.find(language => language && normalizeLocale(language) !== 'en');
+  result.locale = hasSavedLocale ? normalizeLocale(value.locale) : normalizeLocale(browserLocale || 'en');
   result.theme = normalizeTheme(value?.theme);
   result.uiScale = normalizeUIScale(value?.uiScale);
   result.uiScaleMode = normalizeUIScaleMode(value?.uiScaleMode, value?.uiScale);
