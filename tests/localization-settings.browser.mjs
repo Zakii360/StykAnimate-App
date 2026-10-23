@@ -50,7 +50,7 @@ async function setup() {
 
 try {
   await setup();
-  check('Italian OS locale still starts the editor in explicit default English', await page.evaluate(() => navigator.language === 'it-IT' && localeSettings.value.locale === 'en' && document.documentElement.lang === 'en'));
+  check('A fresh install follows the browser language when a translation exists', await page.evaluate(() => navigator.language === 'it-IT' && localeSettings.value.locale === 'it' && document.documentElement.lang === 'it'));
   await page.evaluate(() => localeSettings.open());
   check('Settings exposes all 27 supplied Pivot languages with distinct regional variants', await page.locator('[data-setting=locale] option').evaluateAll(options => options.length === 27 && ['ar','he','zh-Hans','es-419','pt-BR','it','en'].every(id => options.some(option => option.value === id))));
   await page.locator('[data-setting=locale]').focus();
